@@ -1,3 +1,10 @@
+## Info about this repo
+This repo is where you will be doing your homework for the most part.
+
+When you're done with your homework, push your changes to github.
+
+The text below is from First, and it explains a little about the repository and how it works.
+
 ## TeamCode Module
 
 Welcome!
