@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -94,6 +94,14 @@ public class BasicOpMode_Iterative extends OpMode
     @Override
     public void start() {
         runtime.reset();
+        double y = -gamepad1.left_stick_y;
+        double x = gamepad1.right_stick_x;
+        leftDrive.setPower(y);
+        rightDrive.setPower(y);
+
+        leftDrive.setPower(y + x);
+        rightDrive.setPower(y - x);
+
     }
 
     /*
