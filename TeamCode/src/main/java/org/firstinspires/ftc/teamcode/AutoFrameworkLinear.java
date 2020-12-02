@@ -62,6 +62,8 @@ public class AutoFrameworkLinear extends LinearOpMode {
     private DcMotor backLeftDrive = null;
     private DcMotor backRightDrive = null;
 
+    private double stage = 0;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -86,44 +88,50 @@ public class AutoFrameworkLinear extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            // Setup a variable for each drive wheel to save power level for telemetry
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
-            // POV Mode uses left stick to go forward, and right stick to turn.
-            // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double turn  =  gamepad1.right_stick_x;
-
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            double frontLeftPower=y + x + rx;
-            double backLeftPower=y - x + rx;
-            double frontRightPower=y - x - rx;
-            double backRightPower=y + x - rx;
-            if (Math.abs(frontLeftPower) > 1 || Math.abs(backLeftPower) > 1 ||
-                    Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1 ) {
-                // Find the largest power
-                double max = 0;
-                max = Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower));
-                max = Math.max(Math.abs(frontRightPower), max);
-                max = Math.max(Math.abs(backRightPower), max);
-
-                // Divide everything by max (it's positive so we don't need to worry
-                // about signs)
-                frontLeftPower /= max;
-                backLeftPower /= max;
-                frontRightPower /= max;
-                backRightPower /= max;
+            if (stage == 0) {
+                mecanum(1, 0, 0);
+                if (runtime.seconds()>=5) {
+                    runtime.reset();
+                    stage++;
+                }
+            } else if (stage==1) {
+                mecanum(0, 1, 0);
+                if (runtime.seconds()>=5) {
+                    stage++;
+                }
             }
-            frontLeftDrive.setPower(frontLeftPower);
-            backLeftDrive.setPower(backLeftPower);
-            frontRightDrive.setPower(frontRightPower);
-            backRightDrive.setPower(backRightPower);
+
+            if (runtime.seconds()>=5) {
+                mecanum(1, 0, 0);
+            }
 
         }
+    }
+
+    public void mecanum (double y, double x, double rx) {
+        double frontLeftPower=y + x + rx;
+        double backLeftPower=y - x + rx;
+        double frontRightPower=y - x - rx;
+        double backRightPower=y + x - rx;
+        if (Math.abs(frontLeftPower) > 1 || Math.abs(backLeftPower) > 1 ||
+                Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1 ) {
+            // Find the largest power
+            double max = 0;
+            max = Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower));
+            max = Math.max(Math.abs(frontRightPower), max);
+            max = Math.max(Math.abs(backRightPower), max);
+
+            // Divide everything by max (it's positive so we don't need to worry
+            // about signs)
+            frontLeftPower /= max;
+            backLeftPower /= max;
+            frontRightPower /= max;
+            backRightPower /= max;
+        }
+        frontLeftDrive.setPower(frontLeftPower);
+        backLeftDrive.setPower(backLeftPower);
+        frontRightDrive.setPower(frontRightPower);
+        backRightDrive.setPower(backRightPower);
     }
 
 
