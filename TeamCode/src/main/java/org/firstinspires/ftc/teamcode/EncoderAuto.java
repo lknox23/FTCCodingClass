@@ -57,7 +57,8 @@ public class EncoderAuto extends LinearOpMode {
 
     private double TICKS_PER_ROTATION=1500;
     private double INCHES_PER_ROTATION=3; //wheel's circumference
-    private double TICKS_PER_INCH=TICKS_PER_ROTATION*INCHES_PER_ROTATION;
+    private double TICKS_PER_INCH=TICKS_PER_ROTATION/INCHES_PER_ROTATION;
+    //note: I accidentally said these should be multiplied in class; make sure to divide them instead of multiplying.
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
