@@ -55,6 +55,10 @@ import com.qualcomm.robotcore.util.Range;
 @Disabled
 public class AutoFrameworkLinear extends LinearOpMode {
 
+    private double TICKS_PER_ROTATION=1500;
+    private double INCHES_PER_ROTATION=3; //wheel's circumference
+    private double TICKS_PER_INCH=TICKS_PER_ROTATION*INCHES_PER_ROTATION;
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor frontLeftDrive = null;
@@ -77,10 +81,14 @@ public class AutoFrameworkLinear extends LinearOpMode {
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
         backRightDrive = hardwareMap.get(DcMotor.class, "back_right_drive");
 
+        all_run_using_encoders();
+
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         backLeftDrive.setDirection(DcMotor.Direction.REVERSE);
         frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
+
+
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -90,15 +98,18 @@ public class AutoFrameworkLinear extends LinearOpMode {
         while (opModeIsActive()) {
             if (stage == 0) {
                 mecanum(1, 0, 0);
-                if (runtime.seconds()>=5) {
-                    runtime.reset();
+                if (Math.abs(frontLeftDrive.getCurrentPosition())>=10*TICKS_PER_INCH){
                     stage++;
+                    reset_encoders();
                 }
+                //robot moves forward for 5 seconds
             } else if (stage==1) {
-                mecanum(0, 1, 0);
-                if (runtime.seconds()>=5) {
+                mecanum(0, -1, 0);
+                if (frontLeftDrive.getCurrentPosition()>=10*TICKS_PER_INCH) {
                     stage++;
+                    reset_encoders();
                 }
+                //robot moves to the side for 5 seconds
             }
 
             if (runtime.seconds()>=5) {
@@ -132,6 +143,22 @@ public class AutoFrameworkLinear extends LinearOpMode {
         backLeftDrive.setPower(backLeftPower);
         frontRightDrive.setPower(frontRightPower);
         backRightDrive.setPower(backRightPower);
+    }
+
+    public void reset_encoders() {
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        all_run_using_encoders();
+    }
+
+    public void all_run_using_encoders() {
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
