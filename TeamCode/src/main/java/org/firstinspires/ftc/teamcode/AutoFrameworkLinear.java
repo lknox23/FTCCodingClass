@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 
@@ -55,13 +56,19 @@ import com.qualcomm.robotcore.util.Range;
 @Disabled
 public class AutoFrameworkLinear extends LinearOpMode {
 
+    private double TICKS_PER_ROTATION=1500;
+    private double INCHES_PER_ROTATION=3;
+    private double TICKS_PER_INCH=TICKS_PER_ROTATION*INCHES_PER_ROTATION;
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor frontLeftDrive = null;
     private DcMotor frontRightDrive = null;
     private DcMotor backLeftDrive = null;
     private DcMotor backRightDrive = null;
-
+    private Servo MyServo = null;
+    private void
+    int stage = 0;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -86,10 +93,19 @@ public class AutoFrameworkLinear extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            // Setup a variable for each drive wheel to save power level for telemetry
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
-
+            if (stage == 0) {
+                mecanum(1, 0, 0,);
+                if (Math.abs(frontLeftDrive.getCurrentPosition())>=10*TICKS_PER_INCH){
+                    stage++;
+                    reset_encoders();
+                }
+            } else if (stage == 1) {
+                mecanum(-1, 0, 0);
+                if (frontLeftDrive.getCurrentPosition()>=10*TICKS_PER_INCH){
+                    stage++;
+                    reset_encoders();
+                }
+            }
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
 
@@ -101,6 +117,15 @@ public class AutoFrameworkLinear extends LinearOpMode {
             double backLeftPower=y - x + rx;
             double frontRightPower=y - x - rx;
             double backRightPower=y + x - rx;
+
+            MyServo = hardwareMap.get(Servo.class, "joe");
+            MyServo.setPosition(0.0);
+            if (runtime.seconds()>=5) {
+                MyServo.setPosition(90/360);
+            } else if (runtime.seconds()>=10) {
+                MyServo.setPosition(0.0);
+            }
+
 
             mecanum(1, 0, 0);
             if (runtime.seconds()>=5) {
@@ -136,7 +161,11 @@ public class AutoFrameworkLinear extends LinearOpMode {
         }
     }
 
-public void mecanum (double y, double x, double rx) {
+public void reset_encoders(){
+        
+}
+
+    public void mecanum (double y, double x, double rx) {
     // Setup a variable for each drive wheel to save power level for telemetry
     // Choose to drive using either Tank Mode, or POV Mode
     // Comment out the method that's not used.  The default below is POV.
