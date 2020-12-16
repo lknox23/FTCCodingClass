@@ -51,7 +51,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
 @Disabled
-public class AutoFrameworkLinear extends LinearOpMode {
+public class AutoFrameworkLinear extends BaseRobot {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -107,33 +107,6 @@ public class AutoFrameworkLinear extends LinearOpMode {
 
         }
     }
-
-    public void mecanum (double y, double x, double rx) {
-        double frontLeftPower=y + x + rx;
-        double backLeftPower=y - x + rx;
-        double frontRightPower=y - x - rx;
-        double backRightPower=y + x - rx;
-        if (Math.abs(frontLeftPower) > 1 || Math.abs(backLeftPower) > 1 ||
-                Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1 ) {
-            // Find the largest power
-            double max = 0;
-            max = Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower));
-            max = Math.max(Math.abs(frontRightPower), max);
-            max = Math.max(Math.abs(backRightPower), max);
-
-            // Divide everything by max (it's positive so we don't need to worry
-            // about signs)
-            frontLeftPower /= max;
-            backLeftPower /= max;
-            frontRightPower /= max;
-            backRightPower /= max;
-        }
-        frontLeftDrive.setPower(frontLeftPower);
-        backLeftDrive.setPower(backLeftPower);
-        frontRightDrive.setPower(frontRightPower);
-        backRightDrive.setPower(backRightPower);
-    }
-
 
 
 }

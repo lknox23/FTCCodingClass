@@ -42,7 +42,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 
 @TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
 @Disabled
-public class GyroAuto extends LinearOpMode {
+public class GyroAuto extends BaseRobot {
 
     //using the built-in imu is one way of determining the angle a robot is pointing, and it can act kind of like an encoder for turning.
     private DcMotor frontLeftDrive = null;
